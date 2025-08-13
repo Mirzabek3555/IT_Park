@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ test.title }} - Tuproqqal'a IT Park{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'main:home' %}" class="text-white">Bosh sahifa</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'tests:test_list' %}" class="text-white">Testlar</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">{{ test.title|truncatewords:5 }}</li>
+            </ol>
+        </nav>
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-4">{{ test.title }}</h1>
+                <p class="lead">{{ test.description }}</p>
+                <div class="d-flex gap-3 mb-4">
+                    <span class="badge bg-light text-primary fs-6">{{ test.get_subject_display }}</span>
+                    <span class="badge bg-warning text-dark fs-6">{{ test.time_limit }} daqiqa</span>
+                    <span class="badge bg-success fs-6">{{ test.max_score }} ball</span>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center">
+                <i class="fas fa-question-circle fa-5x text-light opacity-75"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Test Information -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Test haqida</h2>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-layer-group fa-2x text-primary me-3"></i>
+                                    <div>
+                                        <h5>Kategoriya</h5>
+                                        <p class="text-muted">{{ test.category.name }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-clock fa-2x text-primary me-3"></i>
+                                    <div>
+                                        <h5>Vaqt chegarasi</h5>
+                                        <p class="text-muted">{{ test.time_limit }} daqiqa</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-question-circle fa-2x text-primary me-3"></i>
+                                    <div>
+                                        <h5>Savollar soni</h5>
+                                        <p class="text-muted">{{ test.questions.count }} ta</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-star fa-2x text-primary me-3"></i>
+                                    <div>
+                                        <h5>Maksimal ball</h5>
+                                        <p class="text-muted">{{ test.max_score }} ball</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <h5>Test turlari:</h5>
+                        <div class="row g-3">
+                            {% if test.test_type == 'multiple_choice' %}
+                            <div class="col-md-6">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-list-ul me-2"></i>
+                                    <strong>Ko'p tanlovli savollar</strong><br>
+                                    <small>4 ta variantdan to'g'ri javobni tanlang</small>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if test.test_type == 'coding' %}
+                            <div class="col-md-6">
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-code me-2"></i>
+                                    <strong>Kod yozish</strong><br>
+                                    <small>Dasturlash savollariga javob bering</small>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if test.test_type == 'logic' %}
+                            <div class="col-md-6">
+                                <div class="alert alert-success">
+                                    <i class="fas fa-brain me-2"></i>
+                                    <strong>Mantiqiy masalalar</strong><br>
+                                    <small>Mantiqiy fikrlash savollariga javob bering</small>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <!-- Start Test -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-play me-2"></i>
+                            Testni boshlash
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if user.is_authenticated %}
+                            {% if has_taken_test %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Siz bu testni allaqachon yechgansiz
+                                </div>
+                                <a href="{% url 'tests:test_result' test.id %}" class="btn btn-primary w-100">
+                                    <i class="fas fa-chart-bar me-2"></i>Natijani ko'rish
+                                </a>
+                            {% else %}
+                                <p class="text-muted mb-3">
+                                    Testni boshlash uchun tayyor bo'ling. 
+                                    Vaqt chegarasi: {{ test.time_limit }} daqiqa
+                                </p>
+                                <a href="{% url 'tests:start_test' test.id %}" class="btn btn-success btn-lg w-100">
+                                    <i class="fas fa-play me-2"></i>Testni boshlash
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Testni yechish uchun tizimga kiring
+                            </div>
+                            <a href="{% url 'login' %}" class="btn btn-primary w-100 mb-2">
+                                <i class="fas fa-sign-in-alt me-2"></i>Tizimga kirish
+                            </a>
+                            <a href="{% url 'users:register' %}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-user-plus me-2"></i>Ro'yxatdan o'tish
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-rocket me-2"></i>
+                            Tezkor harakatlar
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'tests:test_list' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-list me-2"></i>Barcha testlar
+                            </a>
+                            <a href="{% url 'tests:leaderboard' %}" class="btn btn-outline-success">
+                                <i class="fas fa-trophy me-2"></i>Reyting
+                            </a>
+                            <a href="{% url 'main:profile' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-user me-2"></i>Mening profili
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

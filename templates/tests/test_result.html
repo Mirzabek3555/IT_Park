@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+
+{% block title %}Test natijasi - {{ test.title }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="display-4 fw-bold mb-4">
+                <i class="fas fa-chart-bar me-3"></i>
+                Test natijasi
+            </h1>
+            <p class="lead">
+                {{ test.title }} testini muvaffaqiyatli tugatdingiz!
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Result Summary -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <h2 class="card-title mb-4">{{ test.title }}</h2>
+                        
+                        <!-- Score Display -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-4">
+                                <div class="bg-success text-white rounded p-4">
+                                    <h3 class="mb-0">{{ result.score }}/{{ result.max_possible_score }}</h3>
+                                    <small>Olingan ball</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="bg-primary text-white rounded p-4">
+                                    <h3 class="mb-0">{{ result.percentage|floatformat:1 }}%</h3>
+                                    <small>Foiz</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="bg-info text-white rounded p-4">
+                                    <h3 class="mb-0">{{ result.time_taken|floatformat:0 }} daq</h3>
+                                    <small>Sarflangan vaqt</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Progress Bar -->
+                        <div class="mb-4">
+                            <h5>Natija</h5>
+                            <div class="progress" style="height: 30px;">
+                                <div class="progress-bar bg-success" role="progressbar" 
+                                     style="width: {{ result.percentage }}%">
+                                    {{ result.percentage|floatformat:1 }}%
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Performance Message -->
+                        <div class="alert {% if result.percentage >= 80 %}alert-success{% elif result.percentage >= 60 %}alert-warning{% else %}alert-danger{% endif %}">
+                            {% if result.percentage >= 80 %}
+                                <i class="fas fa-star me-2"></i>
+                                <strong>Ajoyib natija!</strong> Siz juda yaxshi natija ko'rsatdingiz.
+                            {% elif result.percentage >= 60 %}
+                                <i class="fas fa-thumbs-up me-2"></i>
+                                <strong>Yaxshi natija!</strong> Yana ham yaxshilash uchun harakat qiling.
+                            {% else %}
+                                <i class="fas fa-lightbulb me-2"></i>
+                                <strong>Yaxshilash kerak!</strong> Ko'proq mashq qiling va bilimlaringizni oshiring.
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Detailed Results -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list me-2"></i>
+                            Batafsil natijalar
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% for user_answer in user_answers %}
+                        <div class="border-bottom pb-3 mb-3">
+                            <h6 class="mb-2">
+                                <span class="badge bg-primary me-2">{{ forloop.counter }}</span>
+                                {{ user_answer.question.text }}
+                            </h6>
+                            
+                            {% if user_answer.is_correct %}
+                                <div class="alert alert-success py-2">
+                                    <i class="fas fa-check me-2"></i>
+                                    <strong>To'g'ri!</strong>
+                                    {% if user_answer.selected_answer %}
+                                        Sizning javobingiz: {{ user_answer.selected_answer.text }}
+                                    {% else %}
+                                        Sizning javobingiz: {{ user_answer.text_answer|truncatewords:10 }}
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-danger py-2">
+                                    <i class="fas fa-times me-2"></i>
+                                    <strong>Noto'g'ri!</strong>
+                                    {% if user_answer.selected_answer %}
+                                        Sizning javobingiz: {{ user_answer.selected_answer.text }}
+                                    {% else %}
+                                        Sizning javobingiz: {{ user_answer.text_answer|truncatewords:10 }}
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Correct Answer -->
+                                <div class="alert alert-info py-2">
+                                    <i class="fas fa-lightbulb me-2"></i>
+                                    <strong>To'g'ri javob:</strong>
+                                    {% for answer in user_answer.question.answers.all %}
+                                        {% if answer.is_correct %}
+                                            {{ answer.text }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            
+                            <small class="text-muted">
+                                <i class="fas fa-star me-1"></i>
+                                {{ user_answer.points_earned }} ball
+                            </small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <!-- Statistics -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-pie me-2"></i>
+                            Statistika
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <h4 class="text-success">{{ correct_answers }}</h4>
+                                <small class="text-muted">To'g'ri javoblar</small>
+                            </div>
+                            <div class="col-6">
+                                <h4 class="text-danger">{{ incorrect_answers }}</h4>
+                                <small class="text-muted">Noto'g'ri javoblar</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-rocket me-2"></i>
+                            Tezkor harakatlar
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'tests:test_list' %}" class="btn btn-primary">
+                                <i class="fas fa-list me-2"></i>Boshqa testlar
+                            </a>
+                            <a href="{% url 'tests:leaderboard' %}" class="btn btn-outline-success">
+                                <i class="fas fa-trophy me-2"></i>Reytingni ko'rish
+                            </a>
+                            <a href="{% url 'main:profile' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-user me-2"></i>Mening profili
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold mb-4">Yana testlar yeching!</h2>
+        <p class="lead mb-4">
+            Ko'proq testlar yechib, bilim va ko'nikmalaringizni oshiring. 
+            Reytingda yuqori o'rinlarni egallang.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'tests:test_list' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-play me-2"></i>Testlarni boshlash
+            </a>
+            <a href="{% url 'tests:leaderboard' %}" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-trophy me-2"></i>Reytingni ko'rish
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

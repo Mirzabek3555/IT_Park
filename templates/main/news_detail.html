@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ news.title }} - Tuproqqal'a IT Park{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'main:home' %}" class="text-white">Bosh sahifa</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'main:news_list' %}" class="text-white">Yangiliklar</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">{{ news.title|truncatewords:5 }}</li>
+            </ol>
+        </nav>
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-4">{{ news.title }}</h1>
+                <p class="lead mb-4">
+                    <i class="fas fa-calendar me-2"></i>
+                    {{ news.created_at|date:"d.m.Y H:i" }}
+                </p>
+            </div>
+            <div class="col-lg-4 text-center">
+                <i class="fas fa-newspaper fa-5x text-light opacity-75"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- News Content -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        {% if news.image %}
+                            <img src="{{ news.image.url }}" alt="{{ news.title }}" class="img-fluid rounded mb-4">
+                        {% endif %}
+                        <div class="content">
+                            {{ news.content|linebreaks }}
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>
+                                {{ news.created_at|date:"d.m.Y H:i" }} da chop etildi
+                            </small>
+                            <div class="social-share">
+                                <a href="#" class="btn btn-outline-primary btn-sm me-2">
+                                    <i class="fab fa-telegram me-1"></i>Ulashish
+                                </a>
+                                <a href="#" class="btn btn-outline-primary btn-sm">
+                                    <i class="fab fa-facebook me-1"></i>Ulashish
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <!-- Related News -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-newspaper me-2"></i>
+                            Boshqa yangiliklar
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Boshqa yangiliklar tez orada qo'shiladi.</p>
+                        <a href="{% url 'main:news_list' %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-list me-2"></i>Barcha yangiliklar
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-rocket me-2"></i>
+                            Tezkor harakatlar
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'tests:test_list' %}" class="btn btn-primary">
+                                <i class="fas fa-play me-2"></i>Testlarni boshlash
+                            </a>
+                            <a href="{% url 'main:directions_list' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-directions me-2"></i>Yo'nalishlar
+                            </a>
+                            <a href="{% url 'main:contact' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-envelope me-2"></i>Bog'lanish
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

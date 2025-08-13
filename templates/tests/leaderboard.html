@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+
+{% block title %}Reyting - Tuproqqal'a IT Park{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="display-4 fw-bold mb-4">
+                <i class="fas fa-trophy me-3"></i>
+                Reyting
+            </h1>
+            <p class="lead">
+                Eng yaxshi natija ko'rsatgan o'quvchilar reytingi. 
+                O'z o'rnangizni toping va yuqori o'rinlarni egallang.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Leaderboard -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-medal me-2"></i>
+                            Eng yaxshi o'quvchilar
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if top_users %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>O'quvchi</th>
+                                            <th>O'rtacha ball</th>
+                                            <th>Testlar soni</th>
+                                            <th>Jami ball</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in top_users %}
+                                        <tr class="{% if user == request.user %}table-primary{% endif %}">
+                                            <td>
+                                                {% if forloop.counter == 1 %}
+                                                    <i class="fas fa-trophy text-warning fa-lg"></i>
+                                                {% elif forloop.counter == 2 %}
+                                                    <i class="fas fa-medal text-secondary fa-lg"></i>
+                                                {% elif forloop.counter == 3 %}
+                                                    <i class="fas fa-medal text-bronze fa-lg"></i>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">{{ forloop.counter }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    {% if user.profile.avatar %}
+                                                        <img src="{{ user.profile.avatar.url }}" class="rounded-circle me-3" width="40" height="40">
+                                                    {% else %}
+                                                        <i class="fas fa-user-circle fa-2x me-3 text-muted"></i>
+                                                    {% endif %}
+                                                    <div>
+                                                        <strong>{{ user.get_full_name|default:user.username }}</strong>
+                                                        {% if user.school %}
+                                                            <br><small class="text-muted">{{ user.school }}</small>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-success fs-6">{{ user.avg_score|floatformat:1 }}%</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">{{ user.test_count }}</span>
+                                            </td>
+                                            <td>
+                                                <strong>{{ user.total_score }}</strong>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="fas fa-trophy fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">Hali reyting mavjud emas</h5>
+                                <p class="text-muted">Birinchi testni yechib, reytingda o'z o'rnangizni toping!</p>
+                                <a href="{% url 'tests:test_list' %}" class="btn btn-primary">
+                                    <i class="fas fa-play me-2"></i>Testlarni boshlash
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <!-- User's Position -->
+                {% if user.is_authenticated and user_rank %}
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-user me-2"></i>
+                            Sizning o'rningiz
+                        </h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="display-4 text-primary mb-2">{{ user_rank }}</div>
+                        <p class="text-muted">O'rtacha ball: {{ user.profile.average_score|floatformat:1 }}%</p>
+                        <p class="text-muted">Testlar soni: {{ user.profile.tests_taken }}</p>
+                        <a href="{% url 'main:profile' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-user me-2"></i>Profilni ko'rish
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Statistics -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            Statistika
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <h4 class="text-primary">{{ total_users }}</h4>
+                                <small class="text-muted">Jami o'quvchilar</small>
+                            </div>
+                            <div class="col-6">
+                                <h4 class="text-success">{{ total_tests }}</h4>
+                                <small class="text-muted">Yechilgan testlar</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-rocket me-2"></i>
+                            Tezkor harakatlar
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'tests:test_list' %}" class="btn btn-primary">
+                                <i class="fas fa-play me-2"></i>Testlarni boshlash
+                            </a>
+                            <a href="{% url 'main:profile' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-user me-2"></i>Mening profili
+                            </a>
+                            <a href="{% url 'main:directions_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-directions me-2"></i>Yo'nalishlar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Top Performers -->
+{% if top_performers %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Eng yaxshi natijalar</h2>
+        <div class="row g-4">
+            {% for performer in top_performers %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            {% if forloop.counter == 1 %}
+                                <i class="fas fa-crown fa-3x text-warning"></i>
+                            {% elif forloop.counter == 2 %}
+                                <i class="fas fa-medal fa-3x text-secondary"></i>
+                            {% elif forloop.counter == 3 %}
+                                <i class="fas fa-medal fa-3x text-bronze"></i>
+                            {% else %}
+                                <i class="fas fa-star fa-3x text-primary"></i>
+                            {% endif %}
+                        </div>
+                        <h5 class="card-title">{{ performer.test.title }}</h5>
+                        <p class="card-text">
+                            <strong>{{ performer.user.get_full_name|default:performer.user.username }}</strong>
+                        </p>
+                        <div class="d-flex justify-content-between">
+                            <span class="badge bg-success">{{ performer.percentage|floatformat:1 }}%</span>
+                            <span class="badge bg-info">{{ performer.time_taken|floatformat:0 }} daq</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Call to Action -->
+<section class="py-5">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold mb-4">Reytingda yuqori o'rinlarni egallang!</h2>
+        <p class="lead mb-4">
+            Ko'proq testlar yechib, bilim va ko'nikmalaringizni oshiring. 
+            Eng yaxshi natijalar ko'rsating va reytingda yuqori o'rinlarni egallang.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'tests:test_list' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-play me-2"></i>Testlarni boshlash
+            </a>
+            <a href="{% url 'main:profile' %}" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-user me-2"></i>Mening profili
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

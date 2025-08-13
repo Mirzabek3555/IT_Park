@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+
+{% block title %}Bosh sahifa - Tuproqqal'a IT Park{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    Tuproqqal'a IT Park
+                </h1>
+                <p class="lead mb-4">
+                    Zamonaviy texnologiyalar va innovatsiyalar markazi. 
+                    Kelajak mutaxassislarini tayyorlash va IT sohasida rivojlanish uchun.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'tests:test_list' %}" class="btn btn-light btn-lg">
+                        <i class="fas fa-play me-2"></i>Testlarni boshlash
+                    </a>
+                    <a href="{% url 'main:directions_list' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-directions me-2"></i>Yo'nalishlar
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <i class="fas fa-laptop-code display-1 text-light opacity-75"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+{% if about %}
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                {% if about.image %}
+                    <img src="{{ about.image.url }}" alt="IT Park" class="img-fluid rounded">
+                {% endif %}
+            </div>
+            <div class="col-lg-6">
+                <h2 class="mb-4">{{ about.title }}</h2>
+                <p class="lead">{{ about.content }}</p>
+                {% if about.mission %}
+                    <div class="mt-4">
+                        <h5><i class="fas fa-bullseye text-primary me-2"></i>Vazifamiz</h5>
+                        <p>{{ about.mission }}</p>
+                    </div>
+                {% endif %}
+                {% if about.vision %}
+                    <div class="mt-4">
+                        <h5><i class="fas fa-eye text-primary me-2"></i>Ko'rinishimiz</h5>
+                        <p>{{ about.vision }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Directions Section -->
+{% if directions %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Bizning yo'nalishlar</h2>
+            <p class="lead">IT sohasining turli yo'nalishlarida bilim va ko'nikmalar oshiring</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for direction in directions %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    {% if direction.image %}
+                        <img src="{{ direction.image.url }}" class="card-img-top" alt="{{ direction.name }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            {% if direction.icon %}
+                                <i class="{{ direction.icon }} fa-2x text-primary me-3"></i>
+                            {% endif %}
+                            <h5 class="card-title mb-0">{{ direction.name }}</h5>
+                        </div>
+                        <p class="card-text">{{ direction.description|truncatewords:20 }}</p>
+                        <a href="{% url 'main:direction_detail' direction.id %}" class="btn btn-outline-primary">
+                            Batafsil <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'main:directions_list' %}" class="btn btn-primary btn-lg">
+                Barcha yo'nalishlar <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- News Section -->
+{% if news %}
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="display-5 fw-bold">So'nggi yangiliklar</h2>
+                <p class="lead">IT Park faoliyati va yangiliklar haqida ma'lumot</p>
+            </div>
+            <a href="{% url 'main:news_list' %}" class="btn btn-outline-primary">
+                Barcha yangiliklar <i class="fas fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+        
+        <div class="row g-4">
+            {% for news_item in news %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    {% if news_item.image %}
+                        <img src="{{ news_item.image.url }}" class="card-img-top" alt="{{ news_item.title }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ news_item.title }}</h5>
+                        <p class="card-text text-muted">
+                            <small><i class="fas fa-calendar me-1"></i>{{ news_item.created_at|date:"d.m.Y" }}</small>
+                        </p>
+                        <p class="card-text">{{ news_item.content|truncatewords:15 }}</p>
+                        <a href="{% url 'main:news_detail' news_item.id %}" class="btn btn-outline-primary">
+                            O'qish <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Leaderboard Section -->
+{% if top_users %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Eng yaxshi o'quvchilar</h2>
+            <p class="lead">Test natijalari bo'yicha eng yuqori ball to'plagan o'quvchilar</p>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>O'quvchi</th>
+                                        <th>O'rtacha ball</th>
+                                        <th>Testlar soni</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in top_users %}
+                                    <tr>
+                                        <td>
+                                            {% if forloop.counter == 1 %}
+                                                <i class="fas fa-trophy text-warning"></i>
+                                            {% elif forloop.counter == 2 %}
+                                                <i class="fas fa-medal text-secondary"></i>
+                                            {% elif forloop.counter == 3 %}
+                                                <i class="fas fa-medal text-bronze"></i>
+                                            {% else %}
+                                                {{ forloop.counter }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if user.profile.avatar %}
+                                                    <img src="{{ user.profile.avatar.url }}" class="rounded-circle me-2" width="32" height="32">
+                                                {% else %}
+                                                    <i class="fas fa-user-circle fa-2x me-2 text-muted"></i>
+                                                {% endif %}
+                                                <div>
+                                                    <strong>{{ user.get_full_name|default:user.username }}</strong>
+                                                    <br><small class="text-muted">{{ user.school|default:"Maktab ko'rsatilmagan" }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success">{{ user.avg_score|floatformat:1 }}%</span>
+                                        </td>
+                                        <td>{{ user.test_count }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <a href="{% url 'tests:leaderboard' %}" class="btn btn-primary">
+                                To'liq reyting <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold mb-4">Hozir boshlang!</h2>
+        <p class="lead mb-4">
+            IT sohasida bilim va ko'nikmalaringizni oshiring. 
+            Testlar orqali o'z darajangizni aniqlang va reytingda o'z o'rnangizni toping.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'users:register' %}" class="btn btn-light btn-lg">
+                <i class="fas fa-user-plus me-2"></i>Ro'yxatdan o'tish
+            </a>
+            <a href="{% url 'tests:test_list' %}" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-play me-2"></i>Testlarni boshlash
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ direction.name }} - Tuproqqal'a IT Park{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'main:home' %}" class="text-white">Bosh sahifa</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'main:directions_list' %}" class="text-white">Yo'nalishlar</a></li>
+                        <li class="breadcrumb-item active text-white" aria-current="page">{{ direction.name }}</li>
+                    </ol>
+                </nav>
+                <h1 class="display-4 fw-bold mb-4">
+                    {% if direction.icon %}
+                        <i class="{{ direction.icon }} me-3"></i>
+                    {% endif %}
+                    {{ direction.name }}
+                </h1>
+                <p class="lead">{{ direction.description }}</p>
+            </div>
+            <div class="col-lg-4 text-center">
+                {% if direction.image %}
+                    <img src="{{ direction.image.url }}" alt="{{ direction.name }}" class="img-fluid rounded shadow">
+                {% else %}
+                    <div class="bg-light rounded p-5">
+                        {% if direction.icon %}
+                            <i class="{{ direction.icon }} fa-5x text-primary"></i>
+                        {% else %}
+                            <i class="fas fa-laptop-code fa-5x text-primary"></i>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Direction Content -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Yo'nalish haqida</h2>
+                        <div class="content">
+                            {{ direction.description|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <!-- Related Tests -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-question-circle me-2"></i>
+                            Bog'liq testlar
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Bu yo'nalish bo'yicha testlar tez orada qo'shiladi.</p>
+                        <a href="{% url 'tests:test_list' %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-play me-2"></i>Barcha testlar
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-rocket me-2"></i>
+                            Tezkor harakatlar
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'tests:test_list' %}" class="btn btn-primary">
+                                <i class="fas fa-play me-2"></i>Testlarni boshlash
+                            </a>
+                            <a href="{% url 'tests:leaderboard' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-trophy me-2"></i>Reytingni ko'rish
+                            </a>
+                            <a href="{% url 'main:contact' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-envelope me-2"></i>Savol berish
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Directions -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Boshqa yo'nalishlar</h2>
+        <div class="row g-4">
+            {% for other_direction in directions %}
+                {% if other_direction.id != direction.id %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm">
+                        {% if other_direction.image %}
+                            <img src="{{ other_direction.image.url }}" class="card-img-top" alt="{{ other_direction.name }}">
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+                                {% if other_direction.icon %}
+                                    <i class="{{ other_direction.icon }} fa-3x text-primary"></i>
+                                {% else %}
+                                    <i class="fas fa-laptop-code fa-3x text-primary"></i>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ other_direction.name }}</h5>
+                            <p class="card-text">{{ other_direction.description|truncatewords:15 }}</p>
+                            <a href="{% url 'main:direction_detail' other_direction.id %}" class="btn btn-outline-primary">
+                                Batafsil <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

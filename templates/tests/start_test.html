@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ test.title }} - Test yechish{% endblock %}
+
+{% block extra_css %}
+<style>
+    .test-question {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        border-left: 5px solid var(--primary-color);
+    }
+    
+    .test-answer {
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 10px 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .test-answer:hover {
+        background: #e9ecef;
+        border-color: var(--primary-color);
+    }
+    
+    .test-answer.selected {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+    
+    .timer {
+        background: linear-gradient(45deg, var(--warning-color), #ff8c00);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1.1em;
+        box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+    }
+    
+    .progress {
+        height: 10px;
+        border-radius: 5px;
+        background-color: #e9ecef;
+    }
+    
+    .progress-bar {
+        background: linear-gradient(45deg, var(--success-color), #20c997);
+        border-radius: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Test Header -->
+<div class="bg-primary text-white py-3 sticky-top">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h4 class="mb-0">{{ test.title }}</h4>
+                <small>Savol {{ current_question_number }}/{{ total_questions }}</small>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="timer" id="test-timer" data-time-limit="{{ test.time_limit }}">
+                    {{ test.time_limit }}:00
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="progress">
+                    <div class="progress-bar" id="test-progress" role="progressbar" style="width: 0%">0%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Test Form -->
+<section class="py-5">
+    <div class="container">
+        <form id="test-form" method="post" action="{% url 'tests:submit_test' test.id %}">
+            {% csrf_token %}
+            
+            {% for question in questions %}
+            <div class="test-question" data-question-id="{{ question.id }}">
+                <h5 class="mb-3">
+                    <span class="badge bg-primary me-2">{{ forloop.counter }}</span>
+                    {{ question.text }}
+                </h5>
+                
+                {% if test.test_type == 'multiple_choice' %}
+                    {% for answer in question.answers.all %}
+                    <div class="test-answer" data-question-id="{{ question.id }}" data-answer-id="{{ answer.id }}">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="question_{{ question.id }}" 
+                                   id="answer_{{ answer.id }}" value="{{ answer.id }}">
+                            <label class="form-check-label" for="answer_{{ answer.id }}">
+                                {{ answer.text }}
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% elif test.test_type == 'coding' %}
+                    <div class="mb-3">
+                        <label for="coding_answer_{{ question.id }}" class="form-label">Javobingizni yozing:</label>
+                        <textarea class="form-control test-text-answer" id="coding_answer_{{ question.id }}" 
+                                  name="text_answer_{{ question.id }}" rows="8" 
+                                  placeholder="Kodingizni bu yerga yozing..."></textarea>
+                    </div>
+                {% elif test.test_type == 'logic' %}
+                    <div class="mb-3">
+                        <label for="logic_answer_{{ question.id }}" class="form-label">Javobingizni yozing:</label>
+                        <textarea class="form-control test-text-answer" id="logic_answer_{{ question.id }}" 
+                                  name="text_answer_{{ question.id }}" rows="4" 
+                                  placeholder="Javobingizni bu yerga yozing..."></textarea>
+                    </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            
+            <div class="text-center mt-5">
+                <button type="submit" id="submit-test" class="btn btn-success btn-lg">
+                    <i class="fas fa-check me-2"></i>Testni tugatish
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Test timer functionality
+    const timerElement = document.getElementById('test-timer');
+    const timeLimit = parseInt(timerElement.dataset.timeLimit) * 60; // Convert to seconds
+    let timeLeft = timeLimit;
+    
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        
+        timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (timeLeft <= 0) {
+            // Auto-submit test when time runs out
+            document.getElementById('test-form').submit();
+            return;
+        }
+        
+        timeLeft--;
+        setTimeout(updateTimer, 1000);
+    }
+    
+    updateTimer();
+    
+    // Test submission functionality
+    const testForm = document.getElementById('test-form');
+    const submitBtn = document.getElementById('submit-test');
+    const progressBar = document.getElementById('test-progress');
+    
+    // Track answered questions
+    let answeredQuestions = new Set();
+    
+    // Update progress bar
+    function updateProgress() {
+        const totalQuestions = document.querySelectorAll('.test-question').length;
+        const progress = (answeredQuestions.size / totalQuestions) * 100;
+        
+        progressBar.style.width = progress + '%';
+        progressBar.textContent = Math.round(progress) + '%';
+    }
+    
+    // Handle answer selection for multiple choice
+    document.querySelectorAll('.test-answer').forEach(answer => {
+        answer.addEventListener('click', function() {
+            const questionId = this.dataset.questionId;
+            const answerId = this.dataset.answerId;
+            
+            // Remove previous selection for this question
+            document.querySelectorAll(`[data-question-id="${questionId}"]`).forEach(prev => {
+                prev.classList.remove('selected');
+            });
+            
+            // Select current answer
+            this.classList.add('selected');
+            
+            // Update answered questions
+            answeredQuestions.add(questionId);
+            updateProgress();
+        });
+    });
+    
+    // Handle text input for coding/logic questions
+    document.querySelectorAll('.test-text-answer').forEach(input => {
+        input.addEventListener('input', function() {
+            const questionId = this.id.split('_').pop();
+            
+            if (this.value.trim()) {
+                answeredQuestions.add(questionId);
+            } else {
+                answeredQuestions.delete(questionId);
+            }
+            updateProgress();
+        });
+    });
+    
+    // Form submission
+    testForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (answeredQuestions.size === 0) {
+            alert('Iltimos, kamida bitta savolga javob bering!');
+            return;
+        }
+        
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Yuborilmoqda...';
+        
+        // Calculate time taken
+        const timeTaken = timeLimit - timeLeft;
+        
+        // Add time taken to form
+        const timeInput = document.createElement('input');
+        timeInput.type = 'hidden';
+        timeInput.name = 'time_taken';
+        timeInput.value = timeTaken;
+        testForm.appendChild(timeInput);
+        
+        // Submit form
+        testForm.submit();
+    });
+    
+    // Initialize progress
+    updateProgress();
+</script>
+{% endblock %}

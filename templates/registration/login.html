@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Tizimga kirish - Tuproqqal'a IT Park{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="display-4 fw-bold mb-4">
+                <i class="fas fa-sign-in-alt me-3"></i>
+                Tizimga kirish
+            </h1>
+            <p class="lead">
+                IT Park test tizimiga kirish uchun login va parolingizni kiriting.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Login Form -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow-sm">
+                    <div class="card-body p-5">
+                        <h2 class="text-center mb-4">Tizimga kirish</h2>
+                        
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Login yoki parol noto'g'ri. Iltimos, qaytadan urinib ko'ring.
+                            </div>
+                        {% endif %}
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label for="id_username" class="form-label">
+                                    <i class="fas fa-user me-2"></i>Login
+                                </label>
+                                <input type="text" class="form-control" id="id_username" name="username" 
+                                       placeholder="Login yoki email" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_password" class="form-label">
+                                    <i class="fas fa-lock me-2"></i>Parol
+                                </label>
+                                <input type="password" class="form-control" id="id_password" name="password" 
+                                       placeholder="Parolingizni kiriting" required>
+                            </div>
+                            
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
+                                <label class="form-check-label" for="remember_me">
+                                    Meni eslab qol
+                                </label>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Tizimga kirish
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="text-center">
+                            <p class="text-muted mb-3">Hali hisobingiz yo'qmi?</p>
+                            <a href="{% url 'users:register' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-user-plus me-2"></i>Ro'yxatdan o'tish
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div class="card shadow-sm mt-4">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Foydali ma'lumotlar
+                        </h6>
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'main:home' %}" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-home me-2"></i>Bosh sahifa
+                            </a>
+                            <a href="{% url 'main:contact' %}" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-envelope me-2"></i>Bog'lanish
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}Kontakt - Tuproqqal'a IT Park{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="display-4 fw-bold mb-4">
+                <i class="fas fa-envelope me-3"></i>
+                Biz bilan bog'laning
+            </h1>
+            <p class="lead">
+                Savollaringiz bormi? Biz bilan bog'laning va tez orada javob oling. 
+                IT Park faoliyati va imkoniyatlari haqida ma'lumot olish uchun bizga yozing.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Information -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Bizning manzil</h2>
+                        {% if contact %}
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <i class="fas fa-map-marker-alt fa-2x text-primary me-3 mt-1"></i>
+                                        <div>
+                                            <h5>Manzil</h5>
+                                            <p class="text-muted">{{ contact.address }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <i class="fas fa-phone fa-2x text-primary me-3 mt-1"></i>
+                                        <div>
+                                            <h5>Telefon</h5>
+                                            <p class="text-muted">
+                                                <a href="tel:{{ contact.phone }}" class="text-decoration-none">{{ contact.phone }}</a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <i class="fas fa-envelope fa-2x text-primary me-3 mt-1"></i>
+                                        <div>
+                                            <h5>Email</h5>
+                                            <p class="text-muted">
+                                                <a href="mailto:{{ contact.email }}" class="text-decoration-none">{{ contact.email }}</a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-start">
+                                        <i class="fas fa-globe fa-2x text-primary me-3 mt-1"></i>
+                                        <div>
+                                            <h5>Veb-sayt</h5>
+                                            <p class="text-muted">
+                                                {% if contact.website %}
+                                                    <a href="{{ contact.website }}" target="_blank" class="text-decoration-none">{{ contact.website }}</a>
+                                                {% else %}
+                                                    Tez orada qo'shiladi
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if contact.working_hours %}
+                                <div class="col-12">
+                                    <div class="d-flex align-items-start">
+                                        <i class="fas fa-clock fa-2x text-primary me-3 mt-1"></i>
+                                        <div>
+                                            <h5>Ish vaqti</h5>
+                                            <p class="text-muted">{{ contact.working_hours }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="fas fa-info-circle fa-3x text-muted mb-3"></i>
+                                <h4 class="text-muted">Kontakt ma'lumotlari tez orada qo'shiladi</h4>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="card shadow-sm mt-4">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Xabar yozing</h2>
+                        <form>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="name" class="form-label">Ismingiz</label>
+                                    <input type="text" class="form-control" id="name" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                </div>
+                                <div class="col-12">
+                                    <label for="subject" class="form-label">Mavzu</label>
+                                    <input type="text" class="form-control" id="subject" required>
+                                </div>
+                                <div class="col-12">
+                                    <label for="message" class="form-label">Xabar</label>
+                                    <textarea class="form-control" id="message" rows="5" required></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane me-2"></i>Xabar yuborish
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <!-- Map -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-map me-2"></i>
+                            Xaritada ko'rsatish
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if contact and contact.latitude and contact.longitude %}
+                            <div class="ratio ratio-1x1">
+                                <iframe 
+                                    src="https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY&q={{ contact.latitude }},{{ contact.longitude }}"
+                                    allowfullscreen>
+                                </iframe>
+                            </div>
+                        {% else %}
+                            <div class="bg-light rounded p-4 text-center">
+                                <i class="fas fa-map fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">Xarita tez orada qo'shiladi</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-rocket me-2"></i>
+                            Tezkor harakatlar
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'tests:test_list' %}" class="btn btn-primary">
+                                <i class="fas fa-play me-2"></i>Testlarni boshlash
+                            </a>
+                            <a href="{% url 'main:directions_list' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-directions me-2"></i>Yo'nalishlar
+                            </a>
+                            <a href="{% url 'users:register' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-user-plus me-2"></i>Ro'yxatdan o'tish
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
